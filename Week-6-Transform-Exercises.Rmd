@@ -1,0 +1,115 @@
+---
+title: "Transform Data"
+output: html_notebook
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment="")
+library(tidyverse)
+# install.packages("babynames")
+library(babynames)
+```
+
+
+# dplyr
+
+## Your Turn 1
+
+```{r}
+babynames%>%filter(n == 9680)
+```
+
+```{r}
+babynames%>%
+  filter(year == 2015, sex == "M") %>%
+  select(name, n) %>%
+  arrange(desc(n))
+```
+
+Use `%>%` to write a sequence of functions that: 
+
+1. Filters babynames to just the girls that were born in 2017, *then...*  
+2. Selects the `name` and `n` columns, *then...*  
+3. Arranges the results so that the most popular names are near the top.
+%>% is the "pipe" it is a "then" to layer codes or steps
+can do it as an onion ((())) but that gets confusing
+the pipe allows you to carry code to the next step without having to assign everytime
+still has to be in the same chunk
+%>% ctrl + shift + M
+
+```{r}
+babynames %>% 
+  filter(year == 2017, sex == "F") %>% 
+  select(name, n) %>% 
+  arrange(desc(n))
+```
+
+## Your Turn 2
+
+1. Trim `babynames` to just the rows that contain **your** `name` and **your** `sex`  
+2. Trim the result to just the columns that will appear in your graph (not strictly necessary, but useful practice)  
+3. Plot the results as a line graph with `year` on the x axis and `prop` on the y axis
+
+```{r}
+babynames %>% 
+  filter(name == "Emily", sex == "F") %>% 
+  select(year, prop) %>% 
+  ggplot() +
+  geom_line(mapping = aes(year, prop))
+```
+
+## Your Turn 3
+
+Copmplete the code below to extract the rows where `name == "Khaleesi"`. Then use `summarise()` and `sum()` and `min()` to find:
+
+1. The total number of children named Khaleesi
+2. The first year Khaleesi appeared in the data
+
+*(Hint: Be sure to remove each `_` before running the code)*
+
+```{r}
+babynames %>%  
+  filter(name == "Khaleesi") %>% 
+  summarize(total = sum(n), first = min(year))
+```
+
+## Your Turn 4
+
+Use `group_by()`, `summarise()`, and `arrange()` to display the ten most popular names. Compute popularity as the *total* number of children of a single gender given a name.
+
+*(Hint: Be sure to remove each `_` before running the code)*
+
+```{r}
+babynames %>%
+  group_by(name, sex) %>% 
+  summarize(total = sum(n)) %>% 
+  arrange(desc(total))
+```
+
+
+## Your Turn 5
+
+Fill in the blanks to: 
+Rank each name _within its year and sex_. 
+
+*(Hint: Be sure to remove each `_` before running the code)*
+
+```{r}
+babynames %>% 
+  group_by(year, sex) %>% 
+  mutate(rank = min_rank(desc(prop))) %>% 
+  filter(rank == 1)
+```
+
+
+***
+
+# Take aways
+
+* Make tables of summaries with `summarise()`  
+* Make new variables, with `mutate()`  
+* Do groupwise operations with `group_by()`
+
+* Connect operations with `%>%`  
+
